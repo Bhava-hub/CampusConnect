@@ -1,0 +1,164 @@
+name: CampusConnect DevSecOps Security Scan & Kubernetes Validation
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  trivy-fs-scan:
+    name: Trivy Filesystem, Secret & Misconfig Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Create Reports Directory
+        run: mkdir -p reports/security
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo gpg --dearmor -o /usr/share/keyrings/trivy.gpg
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update -y
+          sudo apt-get install -y trivy
+
+      - name: Run Trivy Filesystem Discovery Scan (JSON Report)
+        run: |
+          trivy fs \
+            --config trivy.yaml \
+            --format json \
+            --output reports/security/trivy-fs-report.json \
+            .
+
+      - name: Run Trivy Security Gate (Fail on HIGH/CRITICAL)
+        run: |
+          trivy fs \
+            --config trivy.yaml \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            .
+
+      - name: Upload Filesystem Scan Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-fs-security-report
+          path: reports/security/trivy-fs-report.json
+          retention-days: 14
+
+  build-and-scan-images:
+    name: Build & Scan Container Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Create Reports Directory
+        run: mkdir -p reports/security
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo gpg --dearmor -o /usr/share/keyrings/trivy.gpg
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update -y
+          sudo apt-get install -y trivy
+
+      - name: Build Backend Container Image
+        run: |
+          docker build -t campusconnect-backend:local ./server
+
+      - name: Build Frontend Container Image
+        run: |
+          docker build -t campusconnect-frontend:local ./client
+
+      - name: Scan Backend Image with Trivy (JSON Report)
+        run: |
+          trivy image \
+            --scanners vuln,secret,misconfig \
+            --format json \
+            --output reports/security/trivy-image-backend-report.json \
+            campusconnect-backend:local
+
+      - name: Scan Frontend Image with Trivy (JSON Report)
+        run: |
+          trivy image \
+            --scanners vuln,secret,misconfig \
+            --format json \
+            --output reports/security/trivy-image-frontend-report.json \
+            campusconnect-frontend:local
+
+      - name: Verify Backend Image Security Gate (Fail on HIGH/CRITICAL)
+        run: |
+          trivy image \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            campusconnect-backend:local
+
+      - name: Verify Frontend Image Security Gate (Fail on HIGH/CRITICAL)
+        run: |
+          trivy image \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            campusconnect-frontend:local
+
+      - name: Upload Container Image Scan Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-container-image-reports
+          path: reports/security/trivy-image-*.json
+          retention-days: 14
+
+  k8s-manifest-validation:
+    name: Validate Kubernetes Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo gpg --dearmor -o /usr/share/keyrings/trivy.gpg
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update -y
+          sudo apt-get install -y trivy
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
+
+      - name: Kustomize Build Validation
+        run: |
+          kubectl kustomize k8s/ > k8s-compiled.yaml
+          cat k8s-compiled.yaml
+
+      - name: Scan Kubernetes Manifests with Trivy (Misconfiguration Gate)
+        run: |
+          trivy fs \
+            --scanners misconfig \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            k8s/

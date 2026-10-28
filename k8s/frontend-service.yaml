@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: campusconnect-frontend
+  namespace: campusconnect
+  labels:
+    app.kubernetes.io/name: campusconnect-frontend
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: campusconnect
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: campusconnect-frontend
+    app.kubernetes.io/component: frontend
+  ports:
+    - name: http-web
+      port: 80
+      targetPort: 80
+      protocol: TCP

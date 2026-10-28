@@ -5,6 +5,10 @@
 
 FROM node:20-alpine
 
+# Patch Alpine OS packages to their latest available versions
+USER root
+RUN apk update && apk upgrade --no-cache
+
 # Set working directory inside container
 WORKDIR /usr/src/app
 

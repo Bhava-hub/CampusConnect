@@ -1,4 +1,4 @@
-﻿# Campus Connect: Docker & Docker Compose Guide
+# Campus Connect: Docker & Docker Compose Guide
 
 This guide provides instructions and architectural details for building, configuring, running, and verifying **Campus Connect** using Docker and Docker Compose. Following these instructions ensures the entire multi-service application runs consistently on any computer (macOS, Linux, or Windows).
 
@@ -53,7 +53,7 @@ Docker Compose automatically loads variables from a `.env` file located in the p
 | `PORT` | Host port mapped to backend API container | `5000` | Optional |
 | `FRONTEND_PORT` | Host port mapped to frontend web interface | `5173` | Optional |
 | `MONGO_URI` | MongoDB Atlas connection string with credentials | None | **Yes** |
-| `JWT_SECRET` | Secret key for signing JSON Web Tokens | `campusconnect_super_secret_jwt_key_2026` | **Yes** |
+| `JWT_SECRET` | Secret key for signing JSON Web Tokens | None (set via secret) | **Yes** |
 | `JWT_EXPIRE` | Expiration window for JWT authentication tokens | `30d` | Optional |
 | `NODE_ENV` | Application environment mode | `production` | Optional |
 | `VITE_API_BASE_URL` | Base URL used by frontend client build | `/api` | Optional |
@@ -82,8 +82,8 @@ Open `.env` in your text editor and verify/update your configuration:
 ```env
 PORT=5000
 FRONTEND_PORT=5173
-MONGO_URI=mongodb+srv://campus_connect_devs:Campusconnect1239@cluster0.zhx3fe8.mongodb.net/campusconnect?retryWrites=true&w=majority
-JWT_SECRET=your_strong_random_secret_string
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/campusconnect?retryWrites=true&w=majority
+JWT_SECRET=replace_with_a_long_random_secret
 JWT_EXPIRE=30d
 NODE_ENV=production
 ```

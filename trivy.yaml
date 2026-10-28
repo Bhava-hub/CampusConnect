@@ -1,0 +1,27 @@
+# ==============================================================================
+# CampusConnect - Trivy Security Scanner Configuration
+# Documentation: https://trivy.dev/latest/docs/references/configuration/config-file/
+# ==============================================================================
+
+scan:
+  scanners:
+    - vuln
+    - secret
+    - misconfig
+  skip-dirs:
+    - "**/node_modules"
+    - "client/dist"
+    - "server/coverage"
+    - ".git"
+
+# Vulnerability scanning options
+vulnerability:
+  ignore-unfixed: false
+
+# Severities to include in discovery scans
+severity:
+  - UNKNOWN
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL

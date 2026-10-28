@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: ./CampusConnect-main/server
+      context: ./server
       dockerfile: Dockerfile
     container_name: campusconnect-backend
     restart: unless-stopped
@@ -30,10 +30,10 @@ services:
 
   frontend:
     build:
-      context: ./CampusConnect-main/client
+      context: ./client
       dockerfile: Dockerfile
-      args:
-        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-/api}
+    args:
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-/api}
     container_name: campusconnect-frontend
     restart: unless-stopped
     ports:

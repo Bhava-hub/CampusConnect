@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: campusconnect-config
+  namespace: campusconnect
+  labels:
+    app.kubernetes.io/name: campusconnect-config
+    app.kubernetes.io/part-of: campusconnect
+data:
+  PORT: "5000"
+  FRONTEND_PORT: "80"
+  NODE_ENV: "production"
+  JWT_EXPIRE: "30d"
+  VITE_API_BASE_URL: "/api"
