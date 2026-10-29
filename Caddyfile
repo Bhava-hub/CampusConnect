@@ -1,0 +1,3 @@
+campusconnect-demo.duckdns.org {
+    reverse_proxy frontend:80
+}
