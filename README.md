@@ -2,6 +2,20 @@
 
 A student collaboration platform where learners can explore topics, share peer explanations, and organize study activities.
 
+## Live Deployment
+
+**Website:** https://campusconnect-demo.duckdns.org
+
+CampusConnect is deployed on AWS EC2 using Docker Compose.
+Caddy provides HTTPS with an automatically managed TLS certificate.
+The frontend is served by Nginx, which proxies API requests to the backend.
+
+### Deployment and Monitoring
+
+See [Deployment and Monitoring Guide](docs/monitoring.md) for
+deployment architecture, health checks, Prometheus metrics, Grafana access,
+and alerting configuration.
+
 ---
 
 ## Table of Contents
@@ -313,3 +327,4 @@ Scan reports are stored under `reports/security/`. See [`reports/security/securi
 | [`docs/docker.md`](docs/docker.md) | Building images and using Docker Compose |
 | [`docs/kubernetes.md`](docs/kubernetes.md) | Kubernetes deployment guide |
 | [`reports/security/security-summary.md`](reports/security/security-summary.md) | Security scan findings and remediation notes |
+| [`docs/monitoring.md`](docs/monitoring.md) | AWS deployment, HTTPS, Prometheus, Grafana, and alerting |
