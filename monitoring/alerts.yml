@@ -1,0 +1,35 @@
+
+groups:
+  - name: campusconnect-alerts
+    rules:
+      - alert: BackendDown
+        expr: up{job="campusconnect-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CampusConnect backend is down"
+          description: "Prometheus cannot scrape the CampusConnect backend for 1 minute."
+
+      - alert: HighHTTP5xxErrorRate
+        expr: |
+          (
+            sum(rate(campusconnect_http_requests_total{status_code=~"5.."}[5m]))
+            /
+            clamp_min(sum(rate(campusconnect_http_requests_total[5m])), 0.001)
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High backend HTTP 5xx error rate"
+          description: "More than 5% of backend requests are returning 5xx errors."
+
+      - alert: HighBackendMemory
+        expr: process_resident_memory_bytes > 419430400
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CampusConnect backend memory usage"
+          description: "Backend process memory has exceeded 400 MiB for 5 minutes."
