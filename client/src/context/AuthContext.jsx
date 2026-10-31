@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   // On mount, restore user from token
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    if (token && token !== 'undefined') {
       getMe()
         .then((res) => setUser(res.data))
         .catch(() => localStorage.removeItem('token'))
@@ -21,8 +21,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData, token) => {
-    localStorage.setItem('token', token);
+    if (token) localStorage.setItem('token', token);
     setUser(userData);
+  };
+
+  const updateUser = (userData) => {
+    setUser((prev) => ({ ...prev, ...userData }));
   };
 
   const logout = () => {
@@ -31,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, updateUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

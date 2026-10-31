@@ -12,7 +12,10 @@ import CreateTopicPage    from './pages/CreateTopicPage';
 import ActivitiesPage     from './pages/ActivitiesPage';
 import ActivityDetailPage from './pages/ActivityDetailPage';
 import CreateActivityPage from './pages/CreateActivityPage';
-import AdminUsersPage    from './pages/AdminUsersPage';
+import AdminUsersPage     from './pages/AdminUsersPage';
+import ProfilePage        from './pages/ProfilePage';
+import MyActivityPage     from './pages/MyActivityPage';
+import SavedPage          from './pages/SavedPage';
 
 export default function App() {
   return (
@@ -22,30 +25,36 @@ export default function App() {
           <Navbar />
           <main style={{ flex: 1 }}>
             <Routes>
-              <Route path="/"           element={<HomePage />} />
-              <Route path="/login"      element={<LoginPage />} />
-              <Route path="/register"   element={<RegisterPage />} />
-              <Route path="/topics"     element={<TopicsPage />} />
-              <Route path="/topics/:id" element={<TopicDetailPage />} />
-              <Route path="/activities"     element={<ActivitiesPage />} />
-              <Route path="/activities/:id" element={<ActivityDetailPage />} />
+              {/* Public routes */}
+              <Route path="/"            element={<HomePage />} />
+              <Route path="/login"       element={<LoginPage />} />
+              <Route path="/register"    element={<RegisterPage />} />
+              <Route path="/topics"      element={<TopicsPage />} />
+              <Route path="/topics/:id"  element={<TopicDetailPage />} />
+              <Route path="/activities"      element={<ActivitiesPage />} />
+              <Route path="/activities/:id"  element={<ActivityDetailPage />} />
 
               {/* Protected routes */}
               <Route path="/create-topic"    element={<ProtectedRoute><CreateTopicPage /></ProtectedRoute>} />
               <Route path="/create-activity" element={<ProtectedRoute><CreateActivityPage /></ProtectedRoute>} />
               <Route path="/admin/users"     element={<ProtectedRoute><AdminUsersPage /></ProtectedRoute>} />
+              <Route path="/profile"         element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route path="/my-activity"     element={<ProtectedRoute><MyActivityPage /></ProtectedRoute>} />
+              <Route path="/saved"           element={<ProtectedRoute><SavedPage /></ProtectedRoute>} />
             </Routes>
           </main>
 
-          {/* Footer */}
           <footer style={{
-            borderTop: '1px solid rgba(255,255,255,0.07)',
-            padding: '1.5rem',
+            borderTop: '2px solid var(--navy)',
+            padding: '1.25rem 1.5rem',
             textAlign: 'center',
-            color: '#475569',
+            color: 'var(--muted-fg)',
             fontSize: '0.8rem',
+            fontFamily: "'Silkscreen', monospace",
+            letterSpacing: '0.05em',
+            background: 'var(--cream)',
           }}>
-            CampusConnect · A lightweight social layer for campus life
+            CAMPUSCONNECT · A LIGHTWEIGHT SOCIAL LAYER FOR CAMPUS LIFE
           </footer>
         </div>
       </AuthProvider>
