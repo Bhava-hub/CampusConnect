@@ -28,7 +28,7 @@ describe('Topics API Endpoints', () => {
       .post('/api/auth/register')
       .send({
         name: 'Alice Springs',
-        email: 'alice@example.com',
+        email: 'alice@campus.edu',
         password: 'password123',
         department: 'Information Technology',
       });
@@ -40,7 +40,7 @@ describe('Topics API Endpoints', () => {
       .post('/api/auth/register')
       .send({
         name: 'Bob Builder',
-        email: 'bob@example.com',
+        email: 'bob@college.edu',
         password: 'password123',
         department: 'Mechanical',
       });
@@ -92,7 +92,6 @@ describe('Topics API Endpoints', () => {
 
   describe('GET /api/topics', () => {
     it('should retrieve all topics with explanation counts (200)', async () => {
-      // Create a topic
       const topic = await Topic.create({
         user_id: userId,
         title: 'Binary Search Trees',
@@ -100,7 +99,6 @@ describe('Topics API Endpoints', () => {
         category: 'Data Structures',
       });
 
-      // Add an explanation
       await Explanation.create({
         topic_id: topic._id,
         user_id: userId,
