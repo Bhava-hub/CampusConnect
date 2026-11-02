@@ -18,7 +18,7 @@ const createExplanation = async (req, res) => {
       content,
     });
 
-    const populated = await explanation.populate('user_id', 'name department reputation_pts');
+    const populated = await explanation.populate('user_id', 'name department reputation_pts avatar');
     res.status(201).json(populated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -51,7 +51,7 @@ const upvoteExplanation = async (req, res) => {
       await User.findByIdAndUpdate(explanation.user_id, { $inc: { reputation_pts: 1 } });
     }
 
-    const populated = await explanation.populate('user_id', 'name department reputation_pts');
+    const populated = await explanation.populate('user_id', 'name department reputation_pts avatar');
     res.json({ ...populated.toObject(), upvoted: !alreadyUpvoted });
   } catch (error) {
     res.status(500).json({ message: error.message });

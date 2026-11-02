@@ -42,7 +42,8 @@ Configures test-safe dummy variables before tests execute:
 ### 1. Authentication Endpoints (`tests/auth.test.js`)
 | Method | Endpoint | Scenario | Expected Status |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Valid new user registration | `201 Created` |
+| `POST` | `/api/auth/register` | Valid new user registration with university email | `201 Created` |
+| `POST` | `/api/auth/register` | Non-university email rejection | `400 Bad Request` |
 | `POST` | `/api/auth/register` | Missing required fields (name/email/password) | `400 Bad Request` |
 | `POST` | `/api/auth/register` | Duplicate email registration | `400 Bad Request` |
 | `POST` | `/api/auth/login` | Valid credentials | `200 OK` (with JWT token) |
@@ -52,6 +53,7 @@ Configures test-safe dummy variables before tests execute:
 | `GET` | `/api/auth/me` | Valid Bearer token | `200 OK` (returns user profile) |
 | `GET` | `/api/auth/me` | Missing Authorization header | `401 Unauthorized` |
 | `GET` | `/api/auth/me` | Invalid / malformed Bearer token | `401 Unauthorized` |
+| `PUT` | `/api/auth/profile` | Update profile bio, avatar, year, and skills | `200 OK` |
 
 ### 2. Topics / Questions Endpoints (`tests/topics.test.js`)
 | Method | Endpoint | Scenario | Expected Status |

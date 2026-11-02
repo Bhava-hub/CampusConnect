@@ -17,12 +17,12 @@ afterAll(async () => {
 
 describe('Auth API Endpoints', () => {
   describe('POST /api/auth/register', () => {
-    it('should register a new user successfully with status 201', async () => {
+    it('should register a new user successfully with valid university email (201)', async () => {
       const res = await request(app)
         .post('/api/auth/register')
         .send({
           name: 'Jane Doe',
-          email: 'jane@example.com',
+          email: 'jane@campus.edu',
           password: 'password123',
           department: 'Computer Science',
         });
@@ -31,16 +31,31 @@ describe('Auth API Endpoints', () => {
       expect(res.body).toHaveProperty('_id');
       expect(res.body).toHaveProperty('token');
       expect(res.body.name).toBe('Jane Doe');
-      expect(res.body.email).toBe('jane@example.com');
+      expect(res.body.email).toBe('jane@campus.edu');
       expect(res.body.department).toBe('Computer Science');
+      expect(res.body.avatar).toBeDefined();
       expect(res.body).not.toHaveProperty('password_hash');
+    });
+
+    it('should reject registration when non-university email is provided (400)', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: 'Personal User',
+          email: 'personal@gmail.com',
+          password: 'password123',
+          department: 'Physics',
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toMatch(/Only university\/college email addresses are allowed/i);
     });
 
     it('should return 400 when name, email, or password is missing', async () => {
       const res = await request(app)
         .post('/api/auth/register')
         .send({
-          email: 'jane@example.com',
+          email: 'jane@campus.edu',
         });
 
       expect(res.statusCode).toBe(400);
@@ -50,7 +65,7 @@ describe('Auth API Endpoints', () => {
     it('should return 400 when registering with an existing email', async () => {
       await User.create({
         name: 'Existing User',
-        email: 'existing@example.com',
+        email: 'existing@campus.edu',
         password_hash: 'secret123',
       });
 
@@ -58,7 +73,7 @@ describe('Auth API Endpoints', () => {
         .post('/api/auth/register')
         .send({
           name: 'Another User',
-          email: 'existing@example.com',
+          email: 'existing@campus.edu',
           password: 'newpassword123',
         });
 
@@ -71,7 +86,7 @@ describe('Auth API Endpoints', () => {
     beforeEach(async () => {
       await User.create({
         name: 'John Doe',
-        email: 'john@example.com',
+        email: 'john@college.edu',
         password_hash: 'password123',
       });
     });
@@ -80,20 +95,20 @@ describe('Auth API Endpoints', () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'john@example.com',
+          email: 'john@college.edu',
           password: 'password123',
         });
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('token');
-      expect(res.body.email).toBe('john@example.com');
+      expect(res.body.email).toBe('john@college.edu');
     });
 
     it('should return 401 when password is incorrect', async () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'john@example.com',
+          email: 'john@college.edu',
           password: 'wrongpassword',
         });
 
@@ -105,7 +120,7 @@ describe('Auth API Endpoints', () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'nonexistent@example.com',
+          email: 'nonexistent@college.edu',
           password: 'password123',
         });
 
@@ -117,7 +132,7 @@ describe('Auth API Endpoints', () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'john@example.com',
+          email: 'john@college.edu',
         });
 
       expect(res.statusCode).toBe(400);
@@ -131,7 +146,7 @@ describe('Auth API Endpoints', () => {
         .post('/api/auth/register')
         .send({
           name: 'Alex Smith',
-          email: 'alex@example.com',
+          email: 'alex@institute.ac.in',
           password: 'password123',
         });
 
@@ -142,7 +157,7 @@ describe('Auth API Endpoints', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(res.statusCode).toBe(200);
-      expect(res.body.email).toBe('alex@example.com');
+      expect(res.body.email).toBe('alex@institute.ac.in');
       expect(res.body.name).toBe('Alex Smith');
     });
 
@@ -160,6 +175,36 @@ describe('Auth API Endpoints', () => {
 
       expect(res.statusCode).toBe(401);
       expect(res.body.message).toMatch(/Not authorized, token failed/i);
+    });
+  });
+
+  describe('PUT /api/auth/profile', () => {
+    it('should update user profile bio, avatar and year when authenticated (200)', async () => {
+      const reg = await request(app)
+        .post('/api/auth/register')
+        .send({
+          name: 'Sam Student',
+          email: 'sam@university.edu',
+          password: 'password123',
+        });
+
+      const token = reg.body.token;
+
+      const res = await request(app)
+        .put('/api/auth/profile')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          bio: 'CS Sophomore interested in AI',
+          year: '2nd Year',
+          avatar: 'alpaca',
+          skills: ['React', 'Node.js'],
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.bio).toBe('CS Sophomore interested in AI');
+      expect(res.body.avatar).toBe('alpaca');
+      expect(res.body.year).toBe('2nd Year');
+      expect(res.body.skills).toContain('React');
     });
   });
 });

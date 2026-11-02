@@ -19,7 +19,7 @@ const getTopics = async (req, res) => {
     }
 
     const topics = await Topic.find(query)
-      .populate('user_id', 'name department')
+      .populate('user_id', 'name department avatar')
       .sort({ createdAt: -1 });
 
     // Add explanation count to each topic
@@ -52,7 +52,7 @@ const createTopic = async (req, res) => {
       category: category || 'General',
     });
 
-    const populated = await topic.populate('user_id', 'name department');
+    const populated = await topic.populate('user_id', 'name department avatar');
     res.status(201).json(populated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -63,11 +63,11 @@ const createTopic = async (req, res) => {
 // @route GET /api/topics/:id
 const getTopicById = async (req, res) => {
   try {
-    const topic = await Topic.findById(req.params.id).populate('user_id', 'name department');
+    const topic = await Topic.findById(req.params.id).populate('user_id', 'name department avatar');
     if (!topic) return res.status(404).json({ message: 'Topic not found' });
 
     const explanations = await Explanation.find({ topic_id: req.params.id })
-      .populate('user_id', 'name department reputation_pts')
+      .populate('user_id', 'name department reputation_pts avatar')
       .lean();
 
     // Sort explanations by upvote count descending

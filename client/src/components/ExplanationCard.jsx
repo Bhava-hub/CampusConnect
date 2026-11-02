@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { upvoteExplain, deleteExplanation } from '../api/api';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { AvatarDisplay } from './AvatarPicker';
 
 export default function ExplanationCard({ explanation, onUpvote, onDelete }) {
   const { user } = useAuth();
@@ -45,17 +46,10 @@ export default function ExplanationCard({ explanation, onUpvote, onDelete }) {
     <div className="glass animate-fadeIn" style={{ padding: '1.25rem', marginBottom: '1rem' }}>
       {/* Author row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #0d9488, #7c3aed)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'white', fontWeight: 700, fontSize: '0.85rem',
-          }}>
-            {user_id?.name?.charAt(0).toUpperCase()}
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <AvatarDisplay avatarId={user_id?.avatar || 'doge'} size={34} />
           <div>
-            <p style={{ fontWeight: 600, fontSize: '0.875rem', color: '#e2e8f0' }}>{user_id?.name}</p>
+            <p style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--navy)' }}>{user_id?.name}</p>
             {user_id?.department && (
               <p style={{ fontSize: '0.75rem', color: '#64748b' }}>{user_id.department}</p>
             )}

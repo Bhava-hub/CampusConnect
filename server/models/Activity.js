@@ -1,5 +1,21 @@
 const mongoose = require('mongoose');
 
+const roleSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    open: {
+      type: Number,
+      default: 1,
+      min: 1,
+    },
+  },
+  { _id: false }
+);
+
 const activitySchema = new mongoose.Schema(
   {
     user_id: {
@@ -15,6 +31,18 @@ const activitySchema = new mongoose.Schema(
     description: {
       type: String,
       default: '',
+    },
+    category: {
+      type: String,
+      default: 'General',
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    roles: {
+      type: [roleSchema],
+      default: [],
     },
     people_needed: {
       type: Number,

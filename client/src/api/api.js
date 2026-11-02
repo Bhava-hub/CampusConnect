@@ -15,9 +15,15 @@ api.interceptors.request.use((config) => {
 });
 
 // ── Auth ─────────────────────────────────────────────
-export const registerUser = (data) => api.post('/auth/register', data);
-export const loginUser    = (data) => api.post('/auth/login', data);
-export const getMe        = ()     => api.get('/auth/me');
+export const registerUser    = (data) => api.post('/auth/register', data);
+export const loginUser       = (data) => api.post('/auth/login', data);
+export const getMe           = ()     => api.get('/auth/me');
+export const updateProfile   = (data) => api.put('/auth/profile', data);
+export const getSaved        = ()     => api.get('/auth/saved');
+export const saveTopic       = (id)   => api.post(`/auth/saved/topics/${id}`);
+export const unsaveTopic     = (id)   => api.delete(`/auth/saved/topics/${id}`);
+export const saveActivity    = (id)   => api.post(`/auth/saved/activities/${id}`);
+export const unsaveActivity  = (id)   => api.delete(`/auth/saved/activities/${id}`);
 
 // ── Topics (Explain It) ───────────────────────────────
 export const getTopics      = (params) => api.get('/topics', { params });
@@ -36,6 +42,10 @@ export const joinActivity         = (id)                        => api.post(`/ac
 export const leaveActivity        = (id)                        => api.delete(`/activities/${id}/leave`);
 export const updateMemberStatus   = (activityId, memberId, data) => api.patch(`/activities/${activityId}/members/${memberId}`, data);
 export const deleteActivity       = (id)                        => api.delete(`/activities/${id}`);
+export const getRecommendedTeammates = (id)                     => api.get(`/activities/${id}/recommendations`);
+export const inviteToSquad         = (activityId, userId)        => api.post(`/activities/${activityId}/invite/${userId}`);
+export const getMyNotifications    = ()                          => api.get('/activities/notifications/my');
+export const markNotificationRead  = (id)                        => api.patch(`/activities/notifications/${id}/read`);
 
 // ── Admin ─────────────────────────────────────────────
 export const getAllUsers = ()       => api.get('/auth/users');

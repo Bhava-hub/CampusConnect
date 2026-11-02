@@ -24,6 +24,39 @@ const userSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    avatar: {
+      type: String,
+      default: 'doge',
+    },
+    // New profile fields
+    bio: {
+      type: String,
+      default: '',
+      trim: true,
+      maxlength: 400,
+    },
+    year: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    lookingFor: {
+      type: [String],
+      default: [],
+    },
+    // Saved items
+    savedTopics: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Topic',
+    }],
+    savedActivities: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Activity',
+    }],
     reputation_pts: {
       type: Number,
       default: 0,

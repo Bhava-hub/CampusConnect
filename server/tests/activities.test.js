@@ -24,7 +24,7 @@ describe('Activities & Health API Endpoints', () => {
       .post('/api/auth/register')
       .send({
         name: 'Organizer Sam',
-        email: 'sam@example.com',
+        email: 'sam@college.edu',
         password: 'password123',
         department: 'Sports Council',
       });
@@ -55,6 +55,8 @@ describe('Activities & Health API Endpoints', () => {
           title: 'Campus Hackathon 2026',
           description: 'Annual 24-hour coding hackathon in the main auditorium',
           people_needed: 4,
+          category: 'Hackathon',
+          skills: ['React', 'Node.js'],
         });
 
       expect(res.statusCode).toBe(201);
@@ -62,6 +64,7 @@ describe('Activities & Health API Endpoints', () => {
       expect(res.body.title).toBe('Campus Hackathon 2026');
       expect(res.body.people_needed).toBe(4);
       expect(res.body.status).toBe('open');
+      expect(res.body.skills).toContain('React');
     });
 
     it('should return 400 when required fields are missing', async () => {
